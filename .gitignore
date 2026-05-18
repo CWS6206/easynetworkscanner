@@ -1,0 +1,11 @@
+bin/
+obj/
+publish/
+Data/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+TestResults/
+*.nupkg

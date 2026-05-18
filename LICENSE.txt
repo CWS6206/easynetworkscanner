@@ -1,0 +1,12 @@
+Easy Network Scanner
+
+Version 1.1 - 2026
+
+Copyright by Dr. René Bäder (PhDs)
+
+This software is Freeware and may be used free of charge.
+
+License: GNU General Public License, version 3 or later (GPL-3.0-or-later).
+
+This project is an independent implementation. It does not include source code,
+assets, branding, or protected texts from SattlerIT/sit-lanscanner.

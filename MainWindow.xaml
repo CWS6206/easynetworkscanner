@@ -1,0 +1,342 @@
+<Window x:Class="LanScoutWin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Easy Network Scanner" Height="760" Width="1180" MinHeight="620" MinWidth="980"
+        Icon="Assets/AppIcon.ico"
+        Background="#F5F7FA">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="14,6" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,5" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,3" />
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="GridLinesVisibility" Value="Horizontal" />
+            <Setter Property="HeadersVisibility" Value="Column" />
+            <Setter Property="RowHeight" Value="30" />
+            <Setter Property="AlternatingRowBackground" Value="#EEF3F8" />
+        </Style>
+    </Window.Resources>
+
+    <DockPanel LastChildFill="True">
+        <Border DockPanel.Dock="Top" Background="#172033" Padding="18,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Easy Network Scanner · Version 1.1 - 2026" Foreground="White" FontSize="24" FontWeight="SemiBold" />
+                    <TextBlock Text="Portabler LAN-, WLAN- und Performance-Scanner fuer Windows 11" Foreground="#C7D2E2" />
+                    <TextBlock Text="Copyright by Dr. René Bäder (PhDs) · Freeware kostenlos · Public GNU / GPL-3.0-or-later"
+                               Foreground="#C7D2E2" FontSize="12" Margin="0,4,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Status}" Foreground="White" VerticalAlignment="Center" Margin="0,0,12,0" />
+                    <ProgressBar Width="160" Height="10" Value="{Binding ScanProgress}" Maximum="100" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <TabControl Margin="16">
+            <TabItem Header="Netzwerk-Scan">
+                <DockPanel Margin="10">
+                    <GroupBox Header="Scan-Einstellungen" DockPanel.Dock="Top">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="AdapterBox" ItemsSource="{Binding Adapters}" DisplayMemberPath="NetworkLabel" />
+                            <TextBox x:Name="MaxHostsBox" Grid.Column="1" Text="254" Margin="8,0" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                <Button Content="Adapter laden" Click="RefreshAdapters_Click" />
+                                <Button Content="Scan starten" Click="StartScan_Click" />
+                                <Button Content="Abbrechen" Click="Cancel_Click" />
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+                    <DataGrid ItemsSource="{Binding Devices}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="IP" Binding="{Binding IpAddress}" Width="130" />
+                            <DataGridTextColumn Header="Hostname" Binding="{Binding HostName}" Width="220" />
+                            <DataGridTextColumn Header="MAC" Binding="{Binding MacAddress}" Width="150" />
+                            <DataGridTextColumn Header="Hersteller" Binding="{Binding Vendor}" Width="140" />
+                            <DataGridTextColumn Header="OS-Hinweis" Binding="{Binding OperatingSystemHint}" Width="150" />
+                            <DataGridTextColumn Header="Offene Ports" Binding="{Binding OpenPorts}" Width="*" />
+                            <DataGridTextColumn Header="Ping" Binding="{Binding PingMs}" Width="80" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="Internet-Test">
+                <DockPanel Margin="10">
+                    <GroupBox Header="Ping, Download und Upload" DockPanel.Dock="Top">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Internet-Test starten" Click="InternetTest_Click" />
+                            <TextBlock Text="Nutzt ICMP sowie HTTPS-Testendpunkte. Firewalls koennen einzelne Werte beeinflussen." VerticalAlignment="Center" Foreground="#566174" />
+                        </StackPanel>
+                    </GroupBox>
+                    <DataGrid ItemsSource="{Binding InternetTests}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Zeit" Binding="{Binding Timestamp}" Width="190" />
+                            <DataGridTextColumn Header="Ping Ø" Binding="{Binding AveragePingMs, StringFormat=N1}" Width="100" />
+                            <DataGridTextColumn Header="Jitter" Binding="{Binding JitterMs, StringFormat=N1}" Width="100" />
+                            <DataGridTextColumn Header="Download Mbit/s" Binding="{Binding DownloadMbps, StringFormat=N2}" Width="150" />
+                            <DataGridTextColumn Header="Upload Mbit/s" Binding="{Binding UploadMbps, StringFormat=N2}" Width="140" />
+                            <DataGridTextColumn Header="Protokoll" Binding="{Binding Protocol}" Width="120" />
+                            <DataGridTextColumn Header="Notiz" Binding="{Binding Notes}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="LAN-Performance">
+                <DockPanel Margin="10">
+                    <GroupBox Header="Freigabe testen" DockPanel.Dock="Top">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="SharePathBox" Text="\\server\freigabe" />
+                            <TextBox x:Name="FileSizeBox" Grid.Column="1" Text="64" Margin="8,0" />
+                            <Button Grid.Column="2" Content="Durchsatz testen" Click="LanPerformance_Click" />
+                        </Grid>
+                    </GroupBox>
+                    <DataGrid ItemsSource="{Binding LanTests}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Zeit" Binding="{Binding Timestamp}" Width="190" />
+                            <DataGridTextColumn Header="Ziel" Binding="{Binding TargetPath}" Width="*" />
+                            <DataGridTextColumn Header="Groesse MB" Binding="{Binding FileSizeMb}" Width="100" />
+                            <DataGridTextColumn Header="Schreiben Mbit/s" Binding="{Binding WriteMbps, StringFormat=N2}" Width="150" />
+                            <DataGridTextColumn Header="Lesen Mbit/s" Binding="{Binding ReadMbps, StringFormat=N2}" Width="140" />
+                            <DataGridTextColumn Header="Notiz" Binding="{Binding Notes}" Width="220" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="Netzwerktools">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Traceroute, Gateway/DHCP/DNS, Routing, DNS-Cache, Profile">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox x:Name="TraceTargetBox" Text="8.8.8.8" Width="190" Margin="0,0,8,0" />
+                                <Button Content="Traceroute" Click="TraceRoute_Click" />
+                                <Button Content="Gateway/DHCP/DNS" Click="NetworkConfig_Click" />
+                                <ComboBox x:Name="RoutingFilterBox" Width="90" SelectedIndex="0" Margin="0,0,8,0">
+                                    <ComboBoxItem Content="Alle" />
+                                    <ComboBoxItem Content="IPv4" />
+                                    <ComboBoxItem Content="IPv6" />
+                                </ComboBox>
+                                <Button Content="Routing anzeigen" Click="RoutingTable_Click" />
+                                <Button Content="DNS-Cache anzeigen" Click="DnsCache_Click" />
+                                <Button Content="DNS-Cache leeren" Click="DnsFlush_Click" />
+                                <Button Content="Profile/Firewall" Click="NetworkProfiles_Click" />
+                                <Button Content="Verbindungen" Click="Connections_Click" />
+                            </StackPanel>
+                            <TextBox x:Name="ToolOutputBox" Grid.Row="1" Height="120" Margin="0,10,0,0"
+                                     FontFamily="Consolas" FontSize="12" TextWrapping="NoWrap"
+                                     VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                                     IsReadOnly="True" />
+                        </Grid>
+                    </GroupBox>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Header="Traceroute-Hops" Margin="0,0,8,8">
+                            <DataGrid ItemsSource="{Binding TraceHops}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="#" Binding="{Binding Hop}" Width="45" />
+                                    <DataGridTextColumn Header="Latenz 1" Binding="{Binding Latency1}" Width="85" />
+                                    <DataGridTextColumn Header="Latenz 2" Binding="{Binding Latency2}" Width="85" />
+                                    <DataGridTextColumn Header="Latenz 3" Binding="{Binding Latency3}" Width="85" />
+                                    <DataGridTextColumn Header="Ziel" Binding="{Binding Target}" Width="*" />
+                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="85" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                        <GroupBox Header="Gateway-, DHCP- und DNS-Infos" Grid.Column="1" Margin="8,0,0,8">
+                            <DataGrid ItemsSource="{Binding NetworkConfig}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Adapter" Binding="{Binding Adapter}" Width="160" />
+                                    <DataGridTextColumn Header="IPv4" Binding="{Binding IPv4}" Width="160" />
+                                    <DataGridTextColumn Header="Gateway" Binding="{Binding Gateway}" Width="130" />
+                                    <DataGridTextColumn Header="DHCP" Binding="{Binding DhcpServer}" Width="130" />
+                                    <DataGridTextColumn Header="DNS" Binding="{Binding DnsServers}" Width="*" />
+                                    <DataGridTextColumn Header="Lease" Binding="{Binding Lease}" Width="170" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </Grid>
+                    <GroupBox Header="Offene lokale Verbindungen" Grid.Row="2">
+                        <DataGrid ItemsSource="{Binding Connections}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Proto" Binding="{Binding Protocol}" Width="60" />
+                                <DataGridTextColumn Header="Lokal" Binding="{Binding LocalAddress}" Width="150" />
+                                <DataGridTextColumn Header="Port" Binding="{Binding LocalPort}" Width="70" />
+                                <DataGridTextColumn Header="Remote" Binding="{Binding RemoteAddress}" Width="150" />
+                                <DataGridTextColumn Header="R-Port" Binding="{Binding RemotePort}" Width="70" />
+                                <DataGridTextColumn Header="Status" Binding="{Binding State}" Width="120" />
+                                <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" Width="70" />
+                                <DataGridTextColumn Header="Prozess" Binding="{Binding ProcessName}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Portscanner+">
+                <DockPanel Margin="10">
+                    <GroupBox Header="Erweiterter Portscanner" DockPanel.Dock="Top">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="190" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="PortHostBox" Text="127.0.0.1" />
+                            <TextBox x:Name="PortListBox" Grid.Column="1" Margin="8,0" Text="22,53,80,443,445,3389,8000-8010" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                <Button Content="Scannen" Click="AdvancedPortScan_Click" />
+                                <Button Content="CSV Export" Click="ExportPorts_Click" />
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+                    <DataGrid ItemsSource="{Binding PortScanResults}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Host" Binding="{Binding Host}" Width="170" />
+                            <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="80" />
+                            <DataGridTextColumn Header="Dienst" Binding="{Binding Service}" Width="160" />
+                            <DataGridTextColumn Header="Status" Binding="{Binding State}" Width="160" />
+                            <DataGridTextColumn Header="ms" Binding="{Binding DurationMs}" Width="80" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="WLAN">
+                <DockPanel Margin="10">
+                    <GroupBox Header="WLAN-Informationen" DockPanel.Dock="Top">
+                        <Button Content="WLAN aktualisieren" Click="WifiRefresh_Click" />
+                    </GroupBox>
+                    <DataGrid ItemsSource="{Binding WifiItems}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Bereich" Binding="{Binding Scope}" Width="120" />
+                            <DataGridTextColumn Header="SSID" Binding="{Binding Ssid}" Width="220" />
+                            <DataGridTextColumn Header="Signal" Binding="{Binding Signal}" Width="100" />
+                            <DataGridTextColumn Header="Kanal" Binding="{Binding Channel}" Width="90" />
+                            <DataGridTextColumn Header="Band/Funktyp" Binding="{Binding Band}" Width="160" />
+                            <DataGridTextColumn Header="Empfang" Binding="{Binding ReceiveRate}" Width="100" />
+                            <DataGridTextColumn Header="Senden" Binding="{Binding TransmitRate}" Width="100" />
+                            <DataGridTextColumn Header="Sicherheit" Binding="{Binding Authentication}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="WLAN+">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="WLAN-Verlauf, Kanaluebersicht und Profile">
+                        <Button Content="WLAN+ aktualisieren" Click="WifiExtended_Click" />
+                    </GroupBox>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Header="Qualitaetsverlauf" Margin="0,0,8,8">
+                            <DataGrid ItemsSource="{Binding WifiHistory}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Zeit" Binding="{Binding Timestamp}" Width="150" />
+                                    <DataGridTextColumn Header="SSID" Binding="{Binding Ssid}" Width="160" />
+                                    <DataGridTextColumn Header="Signal" Binding="{Binding Signal}" Width="80" />
+                                    <DataGridTextColumn Header="Kanal" Binding="{Binding Channel}" Width="70" />
+                                    <DataGridTextColumn Header="Band" Binding="{Binding Band}" Width="120" />
+                                    <DataGridTextColumn Header="Rx" Binding="{Binding ReceiveRate}" Width="80" />
+                                    <DataGridTextColumn Header="Tx" Binding="{Binding TransmitRate}" Width="80" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                        <GroupBox Header="Kanaluebersicht" Grid.Column="1" Margin="8,0,0,8">
+                            <DataGrid ItemsSource="{Binding WifiChannels}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Kanal" Binding="{Binding Channel}" Width="70" />
+                                    <DataGridTextColumn Header="Band" Binding="{Binding Band}" Width="120" />
+                                    <DataGridTextColumn Header="Netze" Binding="{Binding NetworkCount}" Width="70" />
+                                    <DataGridTextColumn Header="Staerkstes Signal" Binding="{Binding StrongestSignal}" Width="120" />
+                                    <DataGridTextColumn Header="SSIDs" Binding="{Binding Ssids}" Width="*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </Grid>
+                    <GroupBox Header="WLAN-Profil-Details" Grid.Row="2">
+                        <DataGrid ItemsSource="{Binding WifiProfiles}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Profil" Binding="{Binding Name}" Width="240" />
+                                <DataGridTextColumn Header="Authentifizierung" Binding="{Binding Authentication}" Width="180" />
+                                <DataGridTextColumn Header="Verschluesselung" Binding="{Binding Encryption}" Width="160" />
+                                <DataGridTextColumn Header="Auto-Connect" Binding="{Binding AutoConnect}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Logs &amp; Reports">
+                <DockPanel Margin="10">
+                    <GroupBox Header="Auswertung und Archiv" DockPanel.Dock="Top">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Logs aktualisieren" Click="LogsRefresh_Click" />
+                            <Button Content="Logs archivieren" Click="LogsArchive_Click" />
+                            <Button Content="HTML-Report erstellen" Click="Report_Click" />
+                        </StackPanel>
+                    </GroupBox>
+                    <DataGrid ItemsSource="{Binding LogFiles}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Datei" Binding="{Binding Name}" Width="260" />
+                            <DataGridTextColumn Header="Geaendert" Binding="{Binding LastWriteTime}" Width="190" />
+                            <DataGridTextColumn Header="Bytes" Binding="{Binding SizeBytes}" Width="120" />
+                            <DataGridTextColumn Header="Pfad" Binding="{Binding FullPath}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

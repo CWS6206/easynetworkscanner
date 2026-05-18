@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    <AssemblyName>EasyNetworkScanner</AssemblyName>
+    <RootNamespace>LanScoutWin</RootNamespace>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <InformationalVersion>Version 1.1 - 2026</InformationalVersion>
+    <Authors>Dr. René Bäder (PhDs)</Authors>
+    <Copyright>Copyright by Dr. René Bäder (PhDs)</Copyright>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <Product>Easy Network Scanner</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\AppIcon.ico" />
+    <None Include="LICENSE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="README.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
