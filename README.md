@@ -39,8 +39,6 @@ Copyright by Dr. René Bäder (PhDs).
 
 Easy Network Scanner ist Freeware und kostenlos nutzbar. Das Tool wird unter der GNU General Public License, Version 3 oder spaeter, veroeffentlicht (`GPL-3.0-or-later`).
 
-Diese App ist eine eigene Neuimplementierung. Sie verwendet keinen Quellcode, keine Assets, kein Branding und keine geschuetzten Texte aus `SattlerIT/sit-lanscanner`. Der Link zum Original diente nur als Referenz fuer den dokumentierten Funktionsumfang.
-
 ## Hinweise
 
 - Fuer vollstaendige Netzwerkergebnisse kann ein Start mit Administratorrechten helfen.
