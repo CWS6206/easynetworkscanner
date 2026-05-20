@@ -1,6 +1,6 @@
 # Easy Network Scanner
 
-Easy Network Scanner ist eine portable Windows-11-App fuer LAN-, WLAN- und Performance-Diagnose.
+Easy Network Scanner ist eine kostenlose, portable Windows-11-App für LAN-, WLAN- und Performance-Diagnose.
 
 Version 1.1 - 2026
 
